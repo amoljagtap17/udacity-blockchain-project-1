@@ -240,7 +240,31 @@ class Blockchain {
   validateChain() {
     let self = this
     let errorLog = []
-    return new Promise(async (resolve, reject) => {})
+
+    return new Promise(async (resolve, reject) => {
+      self.chain.forEach(async (block) => {
+        const isValid = await block.validate()
+        let prevBlock = null
+
+        if (isValid) {
+          if (block.height > 0) {
+            if (block.hash !== prevBlock.hash) {
+              errorLog.push(
+                new Error(
+                  `Hash does not match with previous block for block at height ${block.height}`
+                )
+              )
+            }
+          }
+
+          prevBlock = block
+        } else {
+          errorLog.push(new Error(`Invalid block at height ${block.height}`))
+        }
+      })
+
+      resolve(errorLog)
+    })
   }
 }
 
