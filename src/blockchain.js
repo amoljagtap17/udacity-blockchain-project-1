@@ -151,7 +151,7 @@ class Blockchain {
         )
 
         if (messageVerified) {
-          const newBlock = new BlockClass.Block({ star })
+          const newBlock = new BlockClass.Block({ star, address })
 
           const response = await self._addBlock(newBlock)
 
@@ -213,7 +213,22 @@ class Blockchain {
   getStarsByWalletAddress(address) {
     let self = this
     let stars = []
-    return new Promise((resolve, reject) => {})
+
+    return new Promise((resolve, reject) => {
+      try {
+        const decodedBlocks = self.chain.map(async (block) => {
+          const blockData = await block.getBData()
+
+          return blockData
+        })
+
+        stars = decodedBlocks.filter((block) => address === block.address)
+
+        resolve(stars)
+      } catch (err) {
+        reject(err)
+      }
+    })
   }
 
   /**
