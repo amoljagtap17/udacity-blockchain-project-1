@@ -175,7 +175,9 @@ class Blockchain {
     let self = this
 
     return new Promise((resolve, reject) => {
-      const block = self.chain.find((block) => hash === block.hash)
+      // const block = self.chain.find((block) => hash === block.hash)
+
+      const block = self.chain.filter((block) => hash === block.hash)[0]
 
       if (!block) {
         reject(new Error('Block not found for the given hash.'))
