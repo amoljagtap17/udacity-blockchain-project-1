@@ -130,7 +130,39 @@ class Blockchain {
    */
   submitStar(address, message, signature, star) {
     let self = this
-    return new Promise(async (resolve, reject) => {})
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const messageSentTime = parseInt(message.split(':')[1])
+        const currentTime = parseInt(
+          new Date().getTime().toString().slice(0, -3)
+        )
+
+        const timeDiff = currentTime - messageSentTime
+
+        if (timeDiff >= 5 * 60) {
+          reject(new Error('Request Timed out!'))
+        }
+
+        const messageVerified = bitcoinMessage.verify(
+          message,
+          address,
+          signature
+        )
+
+        if (messageVerified) {
+          const newBlock = new BlockClass.Block({ star })
+
+          const response = await self._addBlock(newBlock)
+
+          resolve(response)
+        } else {
+          reject(new Error('Could not verify.'))
+        }
+      } catch (err) {
+        reject(err)
+      }
+    })
   }
 
   /**
