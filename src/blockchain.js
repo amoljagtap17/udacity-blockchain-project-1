@@ -146,7 +146,7 @@ class Blockchain {
         const timeDiff = currentTime - messageSentTime
 
         if (timeDiff >= 5 * 60) {
-          reject(new Error('Request Timed out!'))
+          reject('Request Timed out!')
         }
 
         const messageVerified = bitcoinMessage.verify(
@@ -162,7 +162,7 @@ class Blockchain {
 
           resolve(response)
         } else {
-          reject(new Error('Could not verify.'))
+          reject('Could not verify.')
         }
       } catch (err) {
         reject(err)
@@ -185,7 +185,7 @@ class Blockchain {
       const block = self.chain.filter((block) => hash === block.hash)[0]
 
       if (!block) {
-        reject(new Error('Block not found for the given hash.'))
+        reject('Block not found for the given hash.')
       } else {
         resolve(block)
       }
