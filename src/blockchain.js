@@ -72,7 +72,9 @@ class Blockchain {
         block.time = new Date().getTime().toString().slice(0, -3)
 
         if (self.chain.length > 0) {
-          const previousBlock = getBlockByHeight(self.chain.length - 1)
+          const previousBlock = await this.getBlockByHeight(
+            self.chain.length - 1
+          )
 
           // previous block hash
           block.previousBlockHash = previousBlock.hash
@@ -216,13 +218,23 @@ class Blockchain {
 
     return new Promise((resolve, reject) => {
       try {
-        const decodedBlocks = self.chain.map(async (block) => {
+        /* const decodedBlocks = self.chain.map(async (block) => {
           const blockData = await block.getBData()
 
           return blockData
         })
 
-        stars = decodedBlocks.filter((block) => address === block.address)
+        stars = decodedBlocks.filter(
+          (block) => block !== null && address === block.address
+        ) */
+
+        self.chain.forEach(async (block) => {
+          const blockData = await block.getBData()
+
+          if (blockData !== null && address === blockData.address) {
+            stars.push(blockData.star)
+          }
+        })
 
         resolve(stars)
       } catch (err) {

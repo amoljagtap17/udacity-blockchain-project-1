@@ -77,7 +77,13 @@ class Block {
 
     // Resolve with the data if the object isn't the Genesis block
     return new Promise((resolve, reject) => {
-      self.height > 0 ? resolve(json) : reject(new Error('Genesis Block'))
+      // self.height > 0 ? resolve(json) : reject(new Error('Genesis Block'))
+
+      if (self.height > 0) {
+        resolve(json)
+      } else {
+        resolve(null)
+      }
     })
   }
 }
