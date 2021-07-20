@@ -72,7 +72,7 @@ class Blockchain {
         block.time = new Date().getTime().toString().slice(0, -3)
 
         if (self.chain.length > 0) {
-          const previousBlock = await this.getBlockByHeight(
+          const previousBlock = await self.getBlockByHeight(
             self.chain.length - 1
           )
 
@@ -84,6 +84,9 @@ class Blockchain {
 
         // add block to chain
         self.chain.push(block)
+
+        // validate the chain after adding the block
+        self.validateChain()
 
         self.height++
 
@@ -253,26 +256,25 @@ class Blockchain {
     let self = this
     let errorLog = []
 
-    return new Promise(async (resolve, reject) => {
+    let prevBlock = null
+
+    return new Promise((resolve, reject) => {
       self.chain.forEach(async (block) => {
         const isValid = await block.validate()
-        let prevBlock = null
 
         if (isValid) {
           if (block.height > 0) {
-            if (block.hash !== prevBlock.hash) {
+            if (block.previousBlockHash !== prevBlock.hash) {
               errorLog.push(
-                new Error(
-                  `Hash does not match with previous block for block at height ${block.height}`
-                )
+                `Hash does not match with previous block for block at height ${block.height}`
               )
             }
           }
-
-          prevBlock = block
         } else {
-          errorLog.push(new Error(`Invalid block at height ${block.height}`))
+          errorLog.push(`Invalid block at height ${block.height}`)
         }
+
+        prevBlock = block
       })
 
       resolve(errorLog)
